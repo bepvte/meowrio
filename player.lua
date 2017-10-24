@@ -15,25 +15,37 @@ function player:init(file)
     self.camerax = 0
     self.animations = {}
     self.frame = 1
+    self.rot = 0
+    self.gamestate = 1
+    self.console = false
 end
 
 function player:draw()
     love.graphics.draw(
-        self.image,
+        self.animations[self.frame],
         self.loc.x + self.image:getWidth() / 2,
         self.loc.y + self.image:getHeight() / 2,
-        math.floor(self.loc.x) * 245.23,
+        self.rot,
         self.scale.x,
         self.scale.y,
         self.image:getWidth() / 2,
         self.image:getHeight() / 2
     )
+    if debug then
+        love.graphics.line(self.loc.x, self.loc.y, self.loc.x + self.image:getWidth(), self.loc.y)
+        love.graphics.line(
+            self.loc.x,
+            self.loc.y + self.image:getHeight(),
+            self.loc.x + self.image:getWidth(),
+            self.loc.y + self.image:getHeight()
+        )
+    end
 end
 
 function player:load()
     player.super.load(self)
     table.insert(self.animations, love.graphics.newImage("gfx/meow.png"))
-    table.insert(self.animations, love.graphics.newImage("gfx/meow2.png"))
+    table.insert(self.animations, love.graphics.newImage("gfx/jump.png"))
 end
 
 function player:controls(dt)
@@ -50,7 +62,16 @@ function player:controls(dt)
         self.scale.x, self.origin.x = 1, 0
     end
     if love.keyboard.isDown("r") then
-        love.event.quit("restart")
+        self.gamestate = 1
+        self.vel = vector(0, 0)
+        self.acc = vector(0, 0)
+        self.loc = vector(100, 100)
+        world:update(self, self.loc.x, self.loc.y)
+        self.camerax = 0
+    elseif love.keyboard.isDown("q") then
+        love.event.quit()
+    elseif love.keyboard.isDown("`") then
+        self.console = not self.console
     end
 end
 
@@ -64,6 +85,9 @@ function player:update(dt)
     if not self:groundcollide() then
         self.acc = self.acc + self.gravity
     else
+        self.frame = 1
+        self.rot = math.ceil(self.loc.x) % 4 * 245.23 -- just fucking complete wizardry i made on accident it
+
         self.vel.y = 0
     end
 
@@ -74,28 +98,38 @@ function player:update(dt)
     self.vel.x = self.vel.x * self.friction
     local goalX, goalY = (self.loc + self.vel * dt):unpack()
     self.acc.y, self.acc.x = 0, 0
-    self.loc.x, self.loc.y, cols, _ = world:move(self, goalX, goalY)
+    self.loc.x, self.loc.y, cols, _ = world:move(self, goalX, goalY, self.collidefunc)
 
     if self.loc.x >= 130 - self.camerax then
         self.camerax = self.camerax - (self.loc.x + self.camerax) * dt
     end
 
     -- lose cond
-    if self.loc.y >= 300 then
-        gamestate = 2
+    if self.loc.y >= 300 and not love.keyboard.isDown("r") then
+        self.gamestate = 2
     end
 end
 
 function player:jomp(dt)
     if self:groundcollide() then
         self.vel.y = -9 * self.weight
+        self.frame = 2
     end
 end
 
 function player:groundcollide()
-    local actualx, actualy = world:check(self, self.loc.x, self.loc.y + 1)
+    local actualx, actualy = world:check(self, self.loc.x, self.loc.y + 1, self.collidefunc)
     if actualy ~= self.loc.y + 1 then
         return true
+    end
+end
+
+player.collidefunc = function(item, other)
+    if other.name == "win" then
+        item.gamestate = 4
+        return "touch"
+    elseif other.name == "tile" then
+        return "slide"
     end
 end
 
