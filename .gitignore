@@ -1,5 +1,5 @@
 lua_modules/
-
+releases/
 
 # Compiled Lua sources
 luac.out
