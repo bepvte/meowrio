@@ -49,7 +49,7 @@ function player:load()
 end
 
 function player:controls(dt)
-    if love.keyboard.isDown("w") then
+    if love.keyboard.isDown("w") or love.keyboard.isDown("space") then
         self:jomp(dt)
     end
     if love.keyboard.isDown("a") then
@@ -76,7 +76,7 @@ function player:controls(dt)
 end
 
 function player:update(dt)
-    if love.keyboard.isDown("w") then
+    if love.keyboard.isDown("w") or love.keyboard.isDown("space") then
         self.gravity.y = 0.5
     else
         self.gravity.y = 1
@@ -86,7 +86,7 @@ function player:update(dt)
         self.acc = self.acc + self.gravity
     else
         self.frame = 1
-        self.rot = math.ceil(self.loc.x) % 4 * 245.23 -- just fucking complete wizardry i made on accident it
+        self.rot = math.rad((self.loc.x % 2 * 15)) -- just fucking complete wizardry i made on accident it
 
         self.vel.y = 0
     end
