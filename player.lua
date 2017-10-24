@@ -13,10 +13,27 @@ function player:init(file)
     self.weight = 100
     self.loc = vector(100, 100)
     self.camerax = 0
+    self.animations = {}
+    self.frame = 1
+end
+
+function player:draw()
+    love.graphics.draw(
+        self.image,
+        self.loc.x + self.image:getWidth() / 2,
+        self.loc.y + self.image:getHeight() / 2,
+        math.floor(self.loc.x) * 245.23,
+        self.scale.x,
+        self.scale.y,
+        self.image:getWidth() / 2,
+        self.image:getHeight() / 2
+    )
 end
 
 function player:load()
     player.super.load(self)
+    table.insert(self.animations, love.graphics.newImage("gfx/meow.png"))
+    table.insert(self.animations, love.graphics.newImage("gfx/meow2.png"))
 end
 
 function player:controls(dt)
@@ -32,6 +49,9 @@ function player:controls(dt)
         self.acc.x = 1
         self.scale.x, self.origin.x = 1, 0
     end
+    if love.keyboard.isDown("r") then
+        love.event.quit("restart")
+    end
 end
 
 function player:update(dt)
@@ -46,6 +66,7 @@ function player:update(dt)
     else
         self.vel.y = 0
     end
+
     player:controls(dt)
 
     self.acc = self.acc * self.weight
@@ -57,6 +78,11 @@ function player:update(dt)
 
     if self.loc.x >= 130 - self.camerax then
         self.camerax = self.camerax - (self.loc.x + self.camerax) * dt
+    end
+
+    -- lose cond
+    if self.loc.y >= 300 then
+        gamestate = 2
     end
 end
 
