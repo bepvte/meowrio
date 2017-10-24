@@ -7,3 +7,6 @@
 [submodule "lib/hump"]
 	path = lib/hump
 	url = https://github.com/vrld/hump
+[submodule "lib/shack"]
+	path = lib/shack
+	url = https://github.com/Ulydev/shack.git

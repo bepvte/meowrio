@@ -4,6 +4,8 @@ object = class("object")
 
 function object:init(file)
 	self.loc = vector(0,0)
+	self.scale = vector(1,1)
+	self.origin = vector(0,0)
 	self.file = file
 end	
 
@@ -17,7 +19,7 @@ function object:update(dt)
 end
 
 function object:draw()
-	love.graphics.draw(self.image, self.loc:unpack())
+	love.graphics.draw(self.image, self.loc.x, self.loc.y,0, self.scale.x, self.scale.y, self.origin.x, self.origin.y)
 end
 
 return object
