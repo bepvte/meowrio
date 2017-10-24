@@ -49,6 +49,9 @@ function player:load()
 end
 
 function player:controls(dt)
+    if player.console then
+        return
+    end
     if love.keyboard.isDown("w") or love.keyboard.isDown("space") then
         self:jomp(dt)
     end
@@ -107,6 +110,11 @@ function player:update(dt)
     -- lose cond
     if self.loc.y >= 300 and not love.keyboard.isDown("r") then
         self.gamestate = 2
+        -- keeps it from flipping out on my cpu
+        self.vel = vector(0, 0)
+        self.acc = vector(0, 0)
+        self.loc = vector(100, 100)
+        world:update(self, self.loc.x, self.loc.y)
     end
 end
 
