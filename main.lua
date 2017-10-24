@@ -7,7 +7,7 @@ player = require("player")
 
 debug = os.getenv("DEBUG")
 if debug then
-    inspect = require "inspect"
+    inspect = require "lib/inspect/inspect"
 end
 
 gamestate = 1
@@ -53,7 +53,7 @@ function love.draw()
         love.graphics.pop()
         if debug then
             local x, y = love.mouse.getPosition()
-            love.graphics.print(x .. " " .. y .. "\n" .. player.loc.x .. " " .. player.loc.y .. "\n" .. player.vel.y)
+            love.graphics.print(x .. " " .. y .. "\n" .. player.loc.x .. " " .. player.loc.y .. "\n" .. love.timer.getFPS())
         end
     elseif player.gamestate == 2 then
         love.graphics.print("game over.", love.graphics.getWidth() / 2, love.graphics.getHeight() / 2, 0, 5, 5)
