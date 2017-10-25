@@ -8,7 +8,7 @@ function player:init(file)
     player.super.init(self, file)
     self.vel = vector(0, 0)
     self.gravity = vector(0, 1)
-    self.friction = 0.5
+    self.friction = 10
     self.loc = vector(2, 100)
     self.camerax = 0
     self.animations = {}
@@ -16,7 +16,8 @@ function player:init(file)
     self.rot = 0
     self.gamestate = 1
     self.console = false
-    self.weight = 1
+    self.SPEED = 20
+    self.MAXVEL = 30
 end
 
 function player:draw()
@@ -58,12 +59,13 @@ function player:controls(dt)
         end
     end
     if love.keyboard.isDown("a") then
+        self.vel.x = math.max(self.vel.x - self.SPEED * dt, self.MAXVEL)
         self.vel.x = self.vel.x - self.weight * dt
         self.scale.x, self.origin.x = -1, self.image:getWidth()
     end
 
     if love.keyboard.isDown("d") then
-        self.vel.x = self.vel.x + self.weight * dt
+        self.vel.x = math.max(self.vel.x + self.SPEED * dt, self.MAXVEL)
         self.scale.x, self.origin.x = 1, 0
     end
     if love.keyboard.isDown("r") then
