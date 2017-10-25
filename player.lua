@@ -90,7 +90,11 @@ function player:update(dt)
     else
         self.frame = 1
         self.rot = math.rad((self.loc.x % 2 * 15)) -- just fucking complete wizardry i made on accident it
+        -- good news: less wizardry
+        self.vel.y = 0
+    end
 
+    if player:roofcollide() then
         self.vel.y = 0
     end
 
@@ -103,6 +107,7 @@ function player:update(dt)
     self.acc.y, self.acc.x = 0, 0
     self.loc.x, self.loc.y, cols, _ = world:move(self, goalX, goalY, self.collidefunc)
 
+    -- cameron
     if self.loc.x >= 130 - self.camerax then
         self.camerax = self.camerax - (self.loc.x + self.camerax) * dt
     end
@@ -125,6 +130,12 @@ function player:jomp(dt)
     end
 end
 
+function player:roofcollide()
+    local actualx, actualy = world:check(self, self.loc.x, self.loc.y - 1, self.collidefunc)
+    if actualy ~= self.loc.y - 1 then
+        return true
+    end
+end
 function player:groundcollide()
     local actualx, actualy = world:check(self, self.loc.x, self.loc.y + 1, self.collidefunc)
     if actualy ~= self.loc.y + 1 then
