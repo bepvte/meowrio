@@ -11,7 +11,7 @@ function player:init(file)
     self.gravity = vector(0, 1)
     self.friction = 0.8
     self.weight = 100
-    self.loc = vector(100, 100)
+    self.loc = vector(2, 100)
     self.camerax = 0
     self.animations = {}
     self.frame = 1
@@ -109,7 +109,7 @@ function player:update(dt)
 
     -- cameron
     if self.loc.x >= 130 - self.camerax then
-        self.camerax = self.camerax - (self.loc.x + self.camerax) * dt
+        self.camerax = self.camerax - (self.loc.x + self.camerax) * 2 * dt
     end
 
     -- lose cond
