@@ -8,7 +8,7 @@ function player:init(file)
     player.super.init(self, file)
     self.vel = vector(0, 0)
     self.gravity = vector(0, 1)
-    self.friction = 0.3
+    self.friction = 0.5
     self.loc = vector(2, 100)
     self.camerax = 0
     self.animations = {}
@@ -16,6 +16,7 @@ function player:init(file)
     self.rot = 0
     self.gamestate = 1
     self.console = false
+    self.weight = 1
 end
 
 function player:draw()
@@ -51,15 +52,18 @@ function player:controls(dt)
         return
     end
     if love.keyboard.isDown("w") or love.keyboard.isDown("space") and self.vel.y < 0 then
-        self:jomp(dt)
+        if self:groundcollide() then
+            self.vel.y = -1
+            self.frame = 2
+        end
     end
     if love.keyboard.isDown("a") then
-        self.vel.x = -1 * dt
+        self.vel.x = self.vel.x - self.weight * dt
         self.scale.x, self.origin.x = -1, self.image:getWidth()
     end
 
     if love.keyboard.isDown("d") then
-        self.vel.x = 1 * dt
+        self.vel.x = self.vel.x + self.weight * dt
         self.scale.x, self.origin.x = 1, 0
     end
     if love.keyboard.isDown("r") then
@@ -77,17 +81,16 @@ end
 
 function player:update(dt)
     if love.keyboard.isDown("w") or love.keyboard.isDown("space") then
-        self.gravity.y = 0.5
+        self.gravity.y = 5
     else
-        self.gravity.y = 1
+        self.gravity.y = 100
     end
 
     if not self:groundcollide() then
-        self.vel = self.vel + self.gravity * dt
+        self.vel = (self.vel + self.gravity) * dt
     else
         self.frame = 1
-        self.rot = math.rad((self.loc.x % 2 * 15)) -- just fucking complete wizardry i made on accident it
-        -- good news: less wizardry
+        self.rot = math.rad((self.loc.x % 2 * 15))
         self.vel.y = 0
     end
 
@@ -97,9 +100,8 @@ function player:update(dt)
 
     player:controls(dt)
 
-    self.vel = self.vel * 2
     self.vel.x = self.vel.x - self.friction * math.sign(self.vel.x) * dt
-    local goalX, goalY = (self.loc + self.vel * dt):unpack()
+    local goalX, goalY = (self.loc + self.vel):unpack()
     self.loc.x, self.loc.y, cols, _ = world:move(self, goalX, goalY, self.collidefunc)
 
     -- cameron
@@ -114,13 +116,6 @@ function player:update(dt)
         self.vel = vector(0, 0)
         self.loc = vector(100, 100)
         world:update(self, self.loc.x, self.loc.y)
-    end
-end
-
-function player:jomp(dt)
-    if self:groundcollide() then
-        self.vel.y = -1
-        self.frame = 2
     end
 end
 
