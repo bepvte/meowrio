@@ -101,3 +101,7 @@ function love.draw()
         love.graphics.print("YOUR WIN", love.graphics.getWidth() / 2, love.graphics.getHeight() / 2, 0, 5, 5)
     end
 end
+
+math.sign = function(n)
+    return (n<0) and -1 or ((n>0) and 1 or 0)
+end

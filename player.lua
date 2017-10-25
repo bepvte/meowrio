@@ -6,11 +6,9 @@ player = object:extend("player")
 
 function player:init(file)
     player.super.init(self, file)
-    self.acc = vector(0, 0)
     self.vel = vector(0, 0)
     self.gravity = vector(0, 1)
-    self.friction = 0.8
-    self.weight = 100
+    self.friction = 0.3
     self.loc = vector(2, 100)
     self.camerax = 0
     self.animations = {}
@@ -52,22 +50,21 @@ function player:controls(dt)
     if player.console then
         return
     end
-    if love.keyboard.isDown("w") or love.keyboard.isDown("space") then
+    if love.keyboard.isDown("w") or love.keyboard.isDown("space") and self.vel.y < 0 then
         self:jomp(dt)
     end
     if love.keyboard.isDown("a") then
-        self.acc.x = -1
+        self.vel.x = -1 * dt
         self.scale.x, self.origin.x = -1, self.image:getWidth()
     end
 
     if love.keyboard.isDown("d") then
-        self.acc.x = 1
+        self.vel.x = 1 * dt
         self.scale.x, self.origin.x = 1, 0
     end
     if love.keyboard.isDown("r") then
         self.gamestate = 1
         self.vel = vector(0, 0)
-        self.acc = vector(0, 0)
         self.loc = vector(100, 100)
         world:update(self, self.loc.x, self.loc.y)
         self.camerax = 0
@@ -86,7 +83,7 @@ function player:update(dt)
     end
 
     if not self:groundcollide() then
-        self.acc = self.acc + self.gravity
+        self.vel = self.vel + self.gravity * dt
     else
         self.frame = 1
         self.rot = math.rad((self.loc.x % 2 * 15)) -- just fucking complete wizardry i made on accident it
@@ -100,11 +97,9 @@ function player:update(dt)
 
     player:controls(dt)
 
-    self.acc = self.acc * self.weight
-    self.vel = self.vel + self.acc
-    self.vel.x = self.vel.x * self.friction
+    self.vel = self.vel * 2
+    self.vel.x = self.vel.x - self.friction * math.sign(self.vel.x) * dt
     local goalX, goalY = (self.loc + self.vel * dt):unpack()
-    self.acc.y, self.acc.x = 0, 0
     self.loc.x, self.loc.y, cols, _ = world:move(self, goalX, goalY, self.collidefunc)
 
     -- cameron
@@ -117,7 +112,6 @@ function player:update(dt)
         self.gamestate = 2
         -- keeps it from flipping out on my cpu
         self.vel = vector(0, 0)
-        self.acc = vector(0, 0)
         self.loc = vector(100, 100)
         world:update(self, self.loc.x, self.loc.y)
     end
@@ -125,7 +119,7 @@ end
 
 function player:jomp(dt)
     if self:groundcollide() then
-        self.vel.y = -9 * self.weight
+        self.vel.y = -1
         self.frame = 2
     end
 end
