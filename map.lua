@@ -5,14 +5,15 @@ tilesize = 32
 
 function map:init(tiles)
     self.tiles = {}
+    self.map = 1
 end
 
 function map:load()
-    local tilepng = love.graphics.newImage("gfx/tilemap.png"):getData()
+    local tilepng = love.graphics.newImage("gfx/tilemap" .. self.map .. ".png"):getData()
     self.animation = {love.graphics.newImage("gfx/tile3.png"), love.graphics.newImage("gfx/tile2.png")}
     self.win = love.graphics.newImage("gfx/goal.png")
     self.brick = love.graphics.newImage("gfx/brick.png")
-
+    self.tiles = {}
     for y = 0, tilepng:getHeight() - 1 do
         table.insert(self.tiles, {})
 
@@ -50,7 +51,7 @@ function map:draw()
             elseif val == 3 then
                 love.graphics.draw(self.brick, x * tilesize - tilesize, y * tilesize - tilesize)
             else
-                if debug then
+                if false then
                     love.graphics.setColor(255, 0, 0)
                     love.graphics.line(
                         x * tilesize - tilesize,

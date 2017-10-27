@@ -3,9 +3,10 @@ map = require("map")
 class = require "lib/30log/30log"
 bump = require "lib/bump/bump"
 screen = require "lib/shack/shack"
+tick = require "lib/tick/tick"
 player = require("player")
 utf8 = require("utf8")
-
+camera = require("lib/hump/camera")(102 + 64 * 2, 170 - 16, 2)
 debug = os.getenv("DEBUG")
 if debug then
     inspect = require "lib/inspect/inspect"
@@ -20,15 +21,19 @@ worklist = {
 currentconsole = ""
 
 function love.load()
+    tick.rate = 1 / 60
     love.graphics.setDefaultFilter("linear", "nearest")
     world = bump.newWorld()
     for _, item in pairs(worklist) do
         item:load()
     end
     map:load()
+    -- camera.x, camera.y = player.loc.x, player.loc.y - 100
 end
 
 function love.update(dt)
+    dt = math.min(1 / 60, dt)
+    camera:lockX(player.loc.x + 150, camera.smooth.damped(10)) -- snap camera: player:camera(7)
     for _, item in pairs(worklist) do
         item:update(dt)
     end
@@ -72,36 +77,47 @@ function love.draw()
     end
     if debug then
         local x, y = love.mouse.getPosition()
+        local camerax, cameray = camera:worldCoords(camera:position())
         love.graphics.print(
             x ..
                 " " ..
                     y ..
                         "\n" ..
-                            player.loc.x ..
+                            player.vel.x ..
                                 " " ..
-                                    player.loc.y .. "\n" .. love.timer.getFPS() .. "\n" .. love.timer.getAverageDelta()
+                                    player.loc.y ..
+                                        "\n" ..
+                                            love.timer.getFPS() ..
+                                                "\n" ..
+                                                    love.timer.getAverageDelta() .. "\n" .. camerax .. " " .. cameray
         )
     end
     if player.gamestate == 1 then
         screen:apply()
-        love.graphics.push()
-        love.graphics.scale(2, 2)
-        love.graphics.translate(player.camerax, 0)
+        camera:attach()
         love.graphics.setBackgroundColor(135, 206, 235)
         love.graphics.setColor(255, 255, 255, 255)
         map:draw()
         for _, item in pairs(worklist) do
             item:draw()
         end
-        love.graphics.pop()
+        camera:detach()
     elseif player.gamestate == 2 then
         love.graphics.print("game over.", love.graphics.getWidth() / 2, love.graphics.getHeight() / 2, 0, 5, 5)
     elseif player.gamestate == 4 then
         love.graphics.setColor(255, 0, 0)
         love.graphics.print("YOUR WIN", love.graphics.getWidth() / 2, love.graphics.getHeight() / 2, 0, 5, 5)
+        if wintime == nil then
+            wintime = love.timer.getTime()
+        elseif love.timer.getTime() - wintime >= 3 then
+            player.gamestate = 1
+            map.map = map.map + 1
+            map:load()
+            wintime = nil
+        end
     end
 end
 
 math.sign = function(n)
-    return (n<0) and -1 or ((n>0) and 1 or 0)
+    return (n < 0) and -1 or ((n > 0) and 1 or 0)
 end

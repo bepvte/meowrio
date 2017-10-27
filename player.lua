@@ -7,17 +7,19 @@ player = object:extend("player")
 function player:init(file)
     player.super.init(self, file)
     self.vel = vector(0, 0)
-    self.gravity = vector(0, 1)
-    self.friction = 10
-    self.loc = vector(2, 100)
-    self.camerax = 0
+    self.gravity = vector(0, 64 * 16)
+    self.friction = 64 * 9
+    self.loc = vector(64, 255)
     self.animations = {}
     self.frame = 1
     self.rot = 0
     self.gamestate = 1
     self.console = false
-    self.SPEED = 20
-    self.MAXVEL = 30
+    self.SPEED = 64 * 15
+    self.MAXVEL = 64 * 6
+    self.SLIDE = 8
+
+    self.JUMP = -(self.gravity.x + (64 * 7))
 end
 
 function player:draw()
@@ -54,26 +56,33 @@ function player:controls(dt)
     end
     if love.keyboard.isDown("w") or love.keyboard.isDown("space") and self.vel.y < 0 then
         if self:groundcollide() then
-            self.vel.y = -1
+            self.vel.y = self.JUMP
             self.frame = 2
         end
     end
     if love.keyboard.isDown("a") then
-        self.vel.x = math.max(self.vel.x - self.SPEED * dt, self.MAXVEL)
-        self.vel.x = self.vel.x - self.weight * dt
+        if self.vel.x > 0 then
+            self.vel.x = self.vel.x - (self.SLIDE * dt)
+        else
+            self.vel.x = math.max(self.vel.x - (self.SPEED * dt), -self.MAXVEL)
+        end
         self.scale.x, self.origin.x = -1, self.image:getWidth()
     end
 
     if love.keyboard.isDown("d") then
-        self.vel.x = math.max(self.vel.x + self.SPEED * dt, self.MAXVEL)
+        if self.vel.x < 0 then
+            self.vel.x = self.vel.x + (self.SLIDE * dt)
+        else
+            self.vel.x = math.min(self.vel.x + (self.SPEED * dt), self.MAXVEL)
+        end
         self.scale.x, self.origin.x = 1, 0
     end
     if love.keyboard.isDown("r") then
         self.gamestate = 1
         self.vel = vector(0, 0)
-        self.loc = vector(100, 100)
+        self.loc = vector(2, 255)
         world:update(self, self.loc.x, self.loc.y)
-        self.camerax = 0
+        camera:lookAt(player.loc.x, player.loc.y - 100)
     elseif love.keyboard.isDown("q") then
         love.event.quit()
     elseif love.keyboard.isDown("`") then
@@ -83,33 +92,34 @@ end
 
 function player:update(dt)
     if love.keyboard.isDown("w") or love.keyboard.isDown("space") then
-        self.gravity.y = 5
+        -- self.gravity.y = 5
     else
-        self.gravity.y = 100
+        -- self.gravity.y = 100
     end
 
     if not self:groundcollide() then
-        self.vel = (self.vel + self.gravity) * dt
+        self.vel = self.vel + (self.gravity * dt)
     else
         self.frame = 1
-        self.rot = math.rad((self.loc.x % 2 * 15))
+        self.rot = math.rad((math.ceil(self.loc.x) % 2.5 * 10))
         self.vel.y = 0
     end
 
     if player:roofcollide() then
-        self.vel.y = 0
+        self.vel.y = 10
+    end
+    if player:sidecollide() then
+        self.vel.x = 0
     end
 
     player:controls(dt)
 
-    self.vel.x = self.vel.x - self.friction * math.sign(self.vel.x) * dt
-    local goalX, goalY = (self.loc + self.vel):unpack()
-    self.loc.x, self.loc.y, cols, _ = world:move(self, goalX, goalY, self.collidefunc)
-
-    -- cameron
-    if self.loc.x >= 130 - self.camerax then
-        self.camerax = self.camerax - (self.loc.x + self.camerax) * 2 * dt
+    self.vel.x = self.vel.x - (self.friction * dt) * math.sign(self.vel.x)
+    if math.abs(self.vel.x) <= 2 then
+        self.vel.x = 0
     end
+    local goalX, goalY = (self.loc + self.vel * dt):unpack()
+    self.loc.x, self.loc.y, cols, _ = world:move(self, goalX, goalY, self.collidefunc)
 
     -- lose cond
     if self.loc.y >= 300 and not love.keyboard.isDown("r") then
@@ -131,6 +141,28 @@ function player:groundcollide()
     local actualx, actualy = world:check(self, self.loc.x, self.loc.y + 1, self.collidefunc)
     if actualy ~= self.loc.y + 1 then
         return true
+    end
+end
+
+function player:sidecollide()
+    local actualx, actualy = world:check(self, self.loc.x + 1, self.loc.y, self.collidefunc)
+    if actualx ~= self.loc.x + 1 then
+        return true
+    end
+    actualx, actualy = world:check(self, self.loc.x - 1, self.loc.y, self.collidefunc)
+    if actualx ~= self.loc.x - 1 then
+        return true
+    end
+end
+function player:camera(stiffness)
+    assert(type(stiffness) == "number", "Invalid parameter: stiffness = " .. tostring(stiffness))
+    return function(dx, dy, s)
+        if player:groundcollide() then
+            local dts = love.timer.getDelta() * (s or stiffness)
+            return dx * dts, dy * dts
+        else
+            return 0, 0
+        end
     end
 end
 
