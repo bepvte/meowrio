@@ -3,7 +3,6 @@ vector = require "lib/hump/vector"
 object = class("object")
 
 function object:init(file)
-	self.loc = vector(0,0)
 	self.scale = vector(1,1)
 	self.origin = vector(0,0)
 	self.file = file

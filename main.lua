@@ -24,11 +24,13 @@ function love.load()
     tick.rate = 1 / 60
     love.graphics.setDefaultFilter("linear", "nearest")
     world = bump.newWorld()
+    map:load()
+
     for _, item in pairs(worklist) do
         item:load()
     end
-    map:load()
-    -- camera.x, camera.y = player.loc.x, player.loc.y - 100
+
+    camera.x, camera.y = player.loc.x, player.loc.y - 100
 end
 
 function love.update(dt)
@@ -77,7 +79,7 @@ function love.draw()
     end
     if debug then
         local x, y = love.mouse.getPosition()
-        local camerax, cameray = camera:worldCoords(camera:position())
+        local camerax, cameray = camera:cameraCoords(love.mouse.getPosition())
         love.graphics.print(
             x ..
                 " " ..

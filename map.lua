@@ -1,11 +1,14 @@
 class = require "lib/30log/30log"
+vector = require "lib/hump/vector"
 
 local map = class("map")
 tilesize = 32
 
 function map:init(tiles)
     self.tiles = {}
-    self.map = 1
+    self.map = 3
+    self.doomy = 0
+    self.spawn = vector(0, 0)
 end
 
 function map:load()
@@ -19,15 +22,23 @@ function map:load()
 
         for x = 0, tilepng:getWidth() - 1 do
             local r, g, b, a = tilepng:getPixel(x, y)
-            if r == 255 then
+            if r == 0 and g == 255 and b == 0 then
                 table.insert(self.tiles[y + 1], 1)
                 world:add({name = "tile", x = x, y = y}, x * tilesize, y * tilesize, tilesize, tilesize)
-            elseif g == 255 then
+            elseif r == 0 and g == 0 and b == 255 then
                 table.insert(self.tiles[y + 1], 2)
                 world:add({name = "win", x = x, y = y}, x * tilesize, y * tilesize, tilesize, tilesize)
-            elseif b == 255 then
+            elseif r == 255 and b == 0 and g == 0 then
                 table.insert(self.tiles[y + 1], 3)
                 world:add({name = "tile", x = x, y = y}, x * tilesize, y * tilesize, tilesize, tilesize)
+            elseif r == 255 and b == 255 and g == 0 then
+                self.spawn = vector(x * tilesize, y * tilesize)
+                table.insert(self.tiles[y + 1], 0)
+
+                print("yog")
+            elseif r == 255 and g == 255 and b == 0 then
+                self.doomy = y * tilesize
+                table.insert(self.tiles[y + 1], 0)
             else
                 table.insert(self.tiles[y + 1], 0)
             end

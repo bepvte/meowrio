@@ -9,12 +9,13 @@ function player:init(file)
     self.vel = vector(0, 0)
     self.gravity = vector(0, 64 * 16)
     self.friction = 64 * 9
-    self.loc = vector(64, 255)
+    self.loc = nil
     self.animations = {}
     self.frame = 1
     self.rot = 0
     self.gamestate = 1
     self.console = false
+    self.doomy = 0
     self.SPEED = 64 * 15
     self.MAXVEL = 64 * 6
     self.SLIDE = 8
@@ -47,9 +48,11 @@ function player:draw()
 end
 
 function player:load()
-    player.super.load(self)
     table.insert(self.animations, love.graphics.newImage("gfx/meow.png"))
     table.insert(self.animations, love.graphics.newImage("gfx/jump.png"))
+    self.loc = map.spawn:clone()
+    self.doomy = map.doomy
+    player.super.load(self)
 end
 
 function player:controls(dt)
@@ -82,9 +85,9 @@ function player:controls(dt)
     if love.keyboard.isDown("r") then
         self.gamestate = 1
         self.vel = vector(0, 0)
-        self.loc = vector(2, 255)
+        self.loc = map.spawn:clone()
         world:update(self, self.loc.x, self.loc.y)
-        camera:lookAt(player.loc.x, player.loc.y - 100)
+        camera:lookAt(player.loc.x, player.loc.y)
     elseif love.keyboard.isDown("q") then
         love.event.quit()
     elseif love.keyboard.isDown("`") then
@@ -124,11 +127,11 @@ function player:update(dt)
     self.loc.x, self.loc.y, cols, _ = world:move(self, goalX, goalY, self.collidefunc)
 
     -- lose cond
-    if self.loc.y >= 300 and not love.keyboard.isDown("r") then
+    if self.loc.y >= self.doomy and not love.keyboard.isDown("r") then
         self.gamestate = 2
         -- keeps it from flipping out on my cpu
         self.vel = vector(0, 0)
-        self.loc = vector(100, 100)
+        self.loc = map.spawn:clone()
         world:update(self, self.loc.x, self.loc.y)
     end
 end
