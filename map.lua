@@ -51,29 +51,14 @@ function map:draw()
             elseif val == 3 then
                 love.graphics.draw(self.brick, x * tilesize - tilesize, y * tilesize - tilesize)
             else
-                if false then
+                if debug then
                     love.graphics.setColor(255, 0, 0)
-                    love.graphics.line(
-                        x * tilesize - tilesize,
+                    love.graphics.rectangle(
+                        "line",
+                        x * tilesise - tilesize,
                         y * tilesize - tilesize,
-                        -- *--.
-                        -- |  |
-                        -- .--.
-                        x * tilesize - tilesize,
-                        y * tilesize,
-                        -- .--*
-                        -- |  |
-                        -- .--.
-                        x * tilesize,
-                        y * tilesize,
-                        -- .--.
-                        -- |  |
-                        -- .--*
-                        x * tilesize,
-                        y * tilesize - tilesize
-                        -- .--.
-                        -- |  |
-                        -- *--.
+                        tilesize,
+                        tilesize
                     )
                     love.graphics.print(x .. "\n" .. y, x * tilesize - tilesize, y * tilesize - tilesize)
                     love.graphics.setColor(255, 255, 255)
