@@ -41,6 +41,8 @@ function player:draw()
             self.loc.x + self.image:getWidth(),
             self.loc.y + self.image:getHeight()
         )
+        if self.points == nil then
+        end
     end
 end
 
@@ -115,7 +117,7 @@ function player:update(dt)
     player:controls(dt)
 
     self.vel.x = self.vel.x - (self.friction * dt) * math.sign(self.vel.x)
-    if math.abs(self.vel.x) <= 2 then
+    if math.abs(self.vel.x) <= 4 then
         self.vel.x = 0
     end
     local goalX, goalY = (self.loc + self.vel * dt):unpack()

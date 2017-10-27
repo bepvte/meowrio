@@ -55,12 +55,12 @@ function map:draw()
                     love.graphics.setColor(255, 0, 0)
                     love.graphics.rectangle(
                         "line",
-                        x * tilesise - tilesize,
+                        x * tilesize - tilesize,
                         y * tilesize - tilesize,
                         tilesize,
                         tilesize
                     )
-                    love.graphics.print(x .. "\n" .. y, x * tilesize - tilesize, y * tilesize - tilesize)
+                    -- love.graphics.print(x .. "\n" .. y, x * tilesize - tilesize, y * tilesize - tilesize)
                     love.graphics.setColor(255, 255, 255)
                 end
             end
