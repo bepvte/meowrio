@@ -16,6 +16,8 @@ function player:init(file)
     self.gamestate = 1
     self.console = false
     self.doomy = 0
+    self.cameramode = 1
+
     self.SPEED = 64 * 15
     self.MAXVEL = 64 * 6
     self.SLIDE = 8
@@ -126,6 +128,11 @@ function player:update(dt)
     local goalX, goalY = (self.loc + self.vel * dt):unpack()
     self.loc.x, self.loc.y, cols, _ = world:move(self, goalX, goalY, self.collidefunc)
 
+    for i=1, #cols do
+      if cols[i].other.name == "camera" then
+        self.cameramode = cols[i].other.direction
+      end
+    end
     -- lose cond
     if self.loc.y >= self.doomy and not love.keyboard.isDown("r") then
         self.gamestate = 2
