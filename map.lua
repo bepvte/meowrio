@@ -7,7 +7,7 @@ tilesize = 32
 
 function map:init(tiles)
 	self.tiles = {}
-	self.map = 1
+	self.map = 3
 	self.doomy = 0
 	self.spawn = vector(0, 0)
 end
@@ -53,7 +53,10 @@ function map:load()
 			elseif r == 100 and g == 100 and b == 100 then
 				table.insert(self.tiles[y + 1], 7)
 				world:add({name = "camera", x = x, y = y, direction = 4}, x * tilesize, y * tilesize, tilesize, tilesize)
-			else
+			elseif r == 99 and g == 99 and b == 99 then
+        table.insert(self.tiles[y + 1], 8)
+        world:add({name = "reset", x = x, y = y }, x * tilesize, y * tilesize, tilesize, tilesize) -- reset
+      else
 				table.insert(self.tiles[y + 1], 0)
 			end
 		end

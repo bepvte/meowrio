@@ -40,7 +40,11 @@ function love.update(dt)
 				  camera:lockX(player.loc.x + 150, camera.smooth.damped(10)) -- snap camera: player:camera(7)
 	elseif player.cameramode == 2 then
 				camera:lockX(player.loc.x - 150, camera.smooth.damped(10))
-	end
+      elseif player.cameramode == 3 then
+        camera:lockY(player.loc.y + 150, player:camera(7))
+      elseif player.cameramode == 4 then
+        camera:lockY(player.loc.y - 90, player:camera(7))
+      end
   for _, item in pairs(worklist) do
     item:update(dt)
   end

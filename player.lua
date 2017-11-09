@@ -131,6 +131,8 @@ function player:update(dt)
     for i=1, #cols do
       if cols[i].other.name == "camera" then
         self.cameramode = cols[i].other.direction
+      elseif cols[i].other.name == "reset" then 
+        camera:lookAt(player.loc.x, player.loc.y); 
       end
     end
     -- lose cond
@@ -181,9 +183,11 @@ end
 player.collidefunc = function(item, other)
     if other.name == "win" then
         item.gamestate = 4
-        return "touch"
+        return "cross"
     elseif other.name == "tile" then
         return "slide"
+    else
+        return "cross"
     end
 end
 
