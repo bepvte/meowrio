@@ -36,15 +36,15 @@ end
 
 function love.update(dt)
   dt = math.min(1 / 60, dt)
-	if player.cameramode == 1 then
-				  camera:lockX(player.loc.x + 150, camera.smooth.damped(10)) -- snap camera: player:camera(7)
-	elseif player.cameramode == 2 then
-				camera:lockX(player.loc.x - 150, camera.smooth.damped(10))
-      elseif player.cameramode == 3 then
-        camera:lockY(player.loc.y + 150, player:camera(7))
-      elseif player.cameramode == 4 then
-        camera:lockY(player.loc.y - 90, player:camera(7))
-      end
+  if player.cameramode == 1 then
+    camera:lockPosition(player.loc.x + 150, player.loc.y, player:camera(7, "x"))-- snap camera: player:camera(7)
+  elseif player.cameramode == 2 then
+    camera:lockPosition(player.loc.x - 150, player.loc.y, player:camera(7, "x"))
+  elseif player.cameramode == 3 then
+    camera:lockPosition(player.loc.x, player.loc.y + 150, player:camera(7, "y"))
+  elseif player.cameramode == 4 then
+    camera:lockPosition(player.loc.x, player.loc.y - 90, player:camera(7, "y"))
+  end
   for _, item in pairs(worklist) do
     item:update(dt)
   end
@@ -81,6 +81,7 @@ end
 
 function love.draw()
   if player.console == true then
+    love.graphics.setColor(0,0,0,128)
     love.graphics.rectangle("fill", 0, 0, 500, 20)
     love.graphics.setColor(255, 255, 255, 255)
     love.graphics.print(currentconsole, 5, 5)
@@ -120,14 +121,14 @@ function love.draw()
     if wintime == nil then
       wintime = love.timer.getTime()
     elseif love.timer.getTime() - wintime >= 3 then
-      player.gamestate = 1
       map.map = map.map + 1
-      map:load()
+      love.load()
+      player.gamestate = 1
       wintime = nil
     end
   end
 end
 
 math.sign = function(n)
-return (n < 0) and -1 or ((n > 0) and 1 or 0)
+  return (n < 0) and -1 or ((n > 0) and 1 or 0)
 end

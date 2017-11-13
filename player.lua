@@ -128,15 +128,13 @@ function player:update(dt)
     local goalX, goalY = (self.loc + self.vel * dt):unpack()
     self.loc.x, self.loc.y, cols, _ = world:move(self, goalX, goalY, self.collidefunc)
 
-    for i=1, #cols do
-      if cols[i].other.name == "camera" then
-        self.cameramode = cols[i].other.direction
-      elseif cols[i].other.name == "reset" then 
-        camera:lookAt(player.loc.x, player.loc.y); 
-      end
+    for i = 1, #cols do
+        if cols[i].other.name == "camera" and player:groundcollide() then
+            self.cameramode = cols[i].other.direction
+        end
     end
     -- lose cond
-    if self.loc.y >= self.doomy and not love.keyboard.isDown("r") then
+    if self.loc.y >= self.doomy and not love.keyboard.isDown("r") and not self.gamestate == 4 then
         self.gamestate = 2
         -- keeps it from flipping out on my cpu
         self.vel = vector(0, 0)
@@ -168,8 +166,29 @@ function player:sidecollide()
         return true
     end
 end
-function player:camera(stiffness)
+function player:camera(stiffness, locker)
     assert(type(stiffness) == "number", "Invalid parameter: stiffness = " .. tostring(stiffness))
+    if locker == "x" then
+        return function(dx, dy, s)
+            if player:groundcollide() then
+                local dts = love.timer.getDelta() * (s or stiffness)
+                return dx * dts, dy * dts
+            else
+                local dts = love.timer.getDelta() * (s or stiffness)
+                return dx * dts, 0
+            end
+        end
+    elseif locker == "y" then
+        return function(dx, dy, s)
+            if player:groundcollide() then
+                local dts = love.timer.getDelta() * (s or stiffness)
+                return dx * dts, dy * dts
+            else
+                local dts = love.timer.getDelta() * (s or stiffness)
+                return 0, dy * dts
+            end
+        end
+    end
     return function(dx, dy, s)
         if player:groundcollide() then
             local dts = love.timer.getDelta() * (s or stiffness)
@@ -182,6 +201,7 @@ end
 
 player.collidefunc = function(item, other)
     if other.name == "win" then
+        other.name = "stupidest fucking workaround i have ever made i hate life and "
         item.gamestate = 4
         return "cross"
     elseif other.name == "tile" then
@@ -190,5 +210,35 @@ player.collidefunc = function(item, other)
         return "cross"
     end
 end
-
+function player:whee()
+  self.gravity = vector(0,0)
+    self.controls = function(self, dt)
+      if player.console then
+            return
+      end
+      if love.keyboard.isDown("w") or love.keyboard.isDown("space") and self.vel.y < 0 then
+        self.loc.y = self.loc.y - 10
+      end
+      if love.keyboard.isDown("a") then
+        self.loc.x = self.loc.x - 10
+      end
+      if love.keyboard.isDown("s") then
+        self.loc.y = self.loc.y + 10
+      end
+      if love.keyboard.isDown("d") then
+        self.loc.x = self.loc.x +10
+      end
+      if love.keyboard.isDown("r") then
+          self.gamestate = 1
+          self.vel = vector(0, 0)
+          self.loc = map.spawn:clone()
+          world:update(self, self.loc.x, self.loc.y)
+          camera:lookAt(player.loc.x, player.loc.y)
+      elseif love.keyboard.isDown("q") then
+          love.event.quit()
+      elseif love.keyboard.isDown("`") then
+          self.console = not self.console
+      end
+    end
+  end
 return player("gfx/meow.png")
