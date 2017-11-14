@@ -1,5 +1,4 @@
 
-map = require("map")
 
 class = require "lib/30log/30log"
 bump = require "lib/bump/bump"
@@ -9,10 +8,12 @@ player = require("player")
 utf8 = require("utf8")
 camera = require("lib/hump/camera")(102 + 64 * 2, 170 - 16, 2)
 debug = os.getenv("DEBUG")
+cmap = os.getenv("MAP")
 if debug then
   inspect = require "lib/inspect/inspect"
 end
 
+map = require("map")
 gamestate = 1
 
 worklist = {
@@ -115,6 +116,14 @@ function love.draw()
     camera:detach()
   elseif player.gamestate == 2 then
     love.graphics.print("game over.", love.graphics.getWidth() / 2, love.graphics.getHeight() / 2, 0, 5, 5)
+    if losetime == nil then
+      losetime = love.timer.getTime()
+    elseif love.timer.getTime() - losetime >= 2 then
+      player.gamestate = 1
+      player.loc = map.spawn:clone()
+      world:update(player, player.loc.x, player.loc.y)
+      losetime = nil
+    end
   elseif player.gamestate == 4 then
     love.graphics.setColor(255, 0, 0)
     love.graphics.print("YOUR WIN", love.graphics.getWidth() / 2, love.graphics.getHeight() / 2, 0, 5, 5)

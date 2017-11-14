@@ -6,7 +6,7 @@ function object:init(file)
 	self.scale = vector(1,1)
 	self.origin = vector(0,0)
 	self.file = file
-end	
+end
 
 function object:load()
 	self.image = love.graphics.newImage(self.file)

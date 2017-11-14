@@ -2,12 +2,14 @@
 class = require "lib/30log/30log"
 vector = require "lib/hump/vector"
 inspect = require "lib/inspect/inspect"
+enemy = require "enemy"
+
 local map = class("map")
 tilesize = 32
 
 function map:init(tiles)
   self.tiles = {}
-  self.map = 1
+  self.map = cmap or 1
   self.doomy = 0
   self.spawn = vector(0, 0)
 end
@@ -35,11 +37,14 @@ function map:load()
       elseif r == 255 and b == 255 and g == 0 then
         self.spawn = vector(x * tilesize, y * tilesize)
         table.insert(self.tiles[y + 1], 0)
-      elseif r == 255 and g == 255 and b == 0 then
+      elseif r == 246 and g == 0 and b == 255 then
+        table.insert(self.tiles[y + 1], 0)
+        table.insert(worklist, enemy("gfx/enemy.png", vector(x*tilesize, y*tilesize)))
+      elseif r == 255 and b == 0 and g == 255 then
         self.doomy = y * tilesize
         table.insert(self.tiles[y + 1], 0)
-        -- camera stuff below
       end
+        -- camera stuff below
       if a == 255 then
         map:upsert(self.tiles, y, x, 4)
         world:add({name = "camera", x = x, y = y, direction = 1}, x * tilesize, y * tilesize, tilesize, tilesize)
