@@ -23,6 +23,9 @@ worklist = {
 currentconsole = ""
 
 function love.load()
+  if map.map == 5 then 
+    love.event.quit()
+  end
   tick.rate = 1 / 60
   love.graphics.setDefaultFilter("linear", "nearest")
   world = bump.newWorld()
