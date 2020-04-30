@@ -15,7 +15,7 @@ function map:init(tiles)
 end
 
 function map:load()
-  local tilepng = love.graphics.newImage("gfx/tilemap" .. self.map .. ".png"):getData()
+  local tilepng = love.image.newImageData("gfx/tilemap" .. self.map .. ".png")
   self.animation = {love.graphics.newImage("gfx/tile3.png"), love.graphics.newImage("gfx/tile2.png")}
   self.win = love.graphics.newImage("gfx/goal.png")
   self.brick = love.graphics.newImage("gfx/brick.png")
@@ -25,6 +25,10 @@ function map:load()
 
     for x = 0, tilepng:getWidth() - 1 do
       local r, g, b, a = tilepng:getPixel(x, y)
+      r = r*255.0
+      g = g*255.0
+      b = b*255.0
+      a = a*255.0
       if r == 0 and g == 255 and b == 0 then
         table.insert(self.tiles[y + 1], 1)
         world:add({name = "tile", x = x, y = y}, x * tilesize, y * tilesize, tilesize, tilesize)
@@ -86,11 +90,11 @@ function map:draw()
       else
         if debug then
           if val == 4 then
-            love.graphics.setColor(0,255,0)
+            love.graphics.setColor(0,1,0)
           elseif val == 5 then
-            love.graphics.setColor(0,0,255)
+            love.graphics.setColor(0,0,1)
           else
-            love.graphics.setColor(255, 0, 0)
+            love.graphics.setColor(1, 0, 0)
           end
           if vall ~= 0 then
             love.graphics.rectangle(
@@ -102,7 +106,7 @@ function map:draw()
             )
           end
           -- love.graphics.print(x .. "\n" .. y, x * tilesize - tilesize, y * tilesize - tilesize)
-          love.graphics.setColor(255, 255, 255)
+          love.graphics.setColor(1,1,1)
         end
       end
     end

@@ -85,9 +85,9 @@ end
 
 function love.draw()
   if player.console == true then
-    love.graphics.setColor(0,0,0,128)
+    love.graphics.setColor(0,0,0,0.5)
     love.graphics.rectangle("fill", 0, 0, 500, 20)
-    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.setColor(1, 1, 1, 1)
     love.graphics.print(currentconsole, 5, 5)
   end
   if debug then
@@ -112,8 +112,8 @@ function love.draw()
   if player.gamestate == 1 then
     screen:apply()
     camera:attach()
-    love.graphics.setBackgroundColor(135, 206, 235)
-    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.setBackgroundColor(0.5294117647058824, 0.807843137254902, 0.9215686274509803)
+    love.graphics.setColor(1, 1, 1, 1)
     map:draw()
     for _, item in pairs(worklist) do
       item:draw()
@@ -130,7 +130,7 @@ function love.draw()
       losetime = nil
     end
   elseif player.gamestate == 4 then
-    love.graphics.setColor(255, 0, 0)
+    love.graphics.setColor(1, 0, 0)
     love.graphics.print("YOU WIN", love.graphics.getWidth() / 2, love.graphics.getHeight() / 2, 0, 5, 5)
     if wintime == nil then
       wintime = love.timer.getTime()
