@@ -61,7 +61,7 @@ function player:controls(dt)
     return
   end
   if love.keyboard.isDown("w") or love.keyboard.isDown("space") and self.vel.y < 0 then
-    if self:groundcollide() then
+    if self:groundcollide() or debug then
       self.vel.y = self.JUMP
       self.frame = 2
     end
@@ -133,7 +133,7 @@ function player:update(dt)
     end
   end
   -- lose cond
-  if self.loc.y >= map.doomy and not love.keyboard.isDown("r") then
+  if self.loc.y >= map.doomy and not ( love.keyboard.isDown("r") or self.gamestate == 4 ) then
     self.gamestate = 2
     -- keeps it from flipping out on my cpu
     self.vel = vector(0, 0)

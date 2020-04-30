@@ -104,7 +104,9 @@ function love.draw()
     "\n" ..
     love.timer.getFPS() ..
     "\n" ..
-    love.timer.getAverageDelta() .. "\n" .. camerax .. " " .. cameray
+    love.timer.getAverageDelta() ..
+    "\n" ..
+    camerax .. " " .. cameray
     )
   end
   if player.gamestate == 1 then
@@ -118,10 +120,10 @@ function love.draw()
     end
     camera:detach()
   elseif player.gamestate == 2 then
-    love.graphics.print("game over.", love.graphics.getWidth() / 2, love.graphics.getHeight() / 2, 0, 5, 5)
+    love.graphics.print("you died", love.graphics.getWidth() / 2, love.graphics.getHeight() / 2, 0, 5, 5)
     if losetime == nil then
       losetime = love.timer.getTime()
-    elseif love.timer.getTime() - losetime >= 2 then
+    elseif love.timer.getTime() - losetime >= 1 then
       player.gamestate = 1
       player.loc = map.spawn:clone()
       world:update(player, player.loc.x, player.loc.y)
@@ -129,7 +131,7 @@ function love.draw()
     end
   elseif player.gamestate == 4 then
     love.graphics.setColor(255, 0, 0)
-    love.graphics.print("YOUR WIN", love.graphics.getWidth() / 2, love.graphics.getHeight() / 2, 0, 5, 5)
+    love.graphics.print("YOU WIN", love.graphics.getWidth() / 2, love.graphics.getHeight() / 2, 0, 5, 5)
     if wintime == nil then
       wintime = love.timer.getTime()
     elseif love.timer.getTime() - wintime >= 3 then
