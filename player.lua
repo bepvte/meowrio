@@ -1,7 +1,7 @@
 -- note: this isnt a physicsobject because i am gay
-object = require "object"
-class = require "lib/30log/30log"
-screen = require "lib/shack/shack"
+object = require("object")
+class = require("lib/30log/30log")
+screen = require("lib/shack/shack")
 
 player = object:extend("player")
 

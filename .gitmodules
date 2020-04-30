@@ -16,3 +16,6 @@
 [submodule "lib/tick"]
 	path = lib/tick
 	url = https://github.com/bjornbytes/tick.git
+[submodule "lib/cindy"]
+	path = lib/cindy
+	url = https://github.com/megagrump/cindy.git

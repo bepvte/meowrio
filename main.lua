@@ -1,19 +1,18 @@
-
-
-class = require "lib/30log/30log"
-bump = require "lib/bump/bump"
-screen = require "lib/shack/shack"
-tick = require "lib/tick/tick"
-player = require("player")
-utf8 = require("utf8")
+bump = require("lib/bump/bump")
 camera = require("lib/hump/camera")(102 + 64 * 2, 170 - 16, 2)
+cindy = require("lib/cindy/cindy")
+b2c = cindy.byte2channel
+class = require("lib/30log/30log")
+screen = require("lib/shack/shack")
+tick = require("lib/tick/tick")
+utf8 = require("utf8")
+
 debug = os.getenv("DEBUG")
 cmap = os.getenv("MAP")
-if debug then
-  inspect = require "lib/inspect/inspect"
-end
 
+player = require("player")
 map = require("map")
+
 gamestate = 1
 
 worklist = {
@@ -112,7 +111,7 @@ function love.draw()
   if player.gamestate == 1 then
     screen:apply()
     camera:attach()
-    love.graphics.setBackgroundColor(0.5294117647058824, 0.807843137254902, 0.9215686274509803)
+    love.graphics.setBackgroundColor(b2c(135), b2c(206), b2c(235))
     love.graphics.setColor(1, 1, 1, 1)
     map:draw()
     for _, item in pairs(worklist) do

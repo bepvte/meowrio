@@ -1,7 +1,7 @@
-object = require "object"
-vector = require "lib/hump/vector"
-class = require "lib/30log/30log"
+class = require("lib/30log/30log")
+vector = require("lib/hump/vector")
 
+object = require("object")
 enemy = object:extend("enemy")
 
 function enemy:init(file, loc)

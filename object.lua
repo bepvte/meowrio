@@ -1,5 +1,6 @@
-class = require "lib/30log/30log"
-vector = require "lib/hump/vector"
+class = require("lib/30log/30log")
+vector = require("lib/hump/vector")
+
 object = class("object")
 
 function object:init(file)

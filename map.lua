@@ -1,9 +1,7 @@
+class = require("lib/30log/30log")
+vector = require("lib/hump/vector")
 
-class = require "lib/30log/30log"
-vector = require "lib/hump/vector"
-inspect = require "lib/inspect/inspect"
-enemy = require "enemy"
-
+enemy = require("enemy")
 local map = class("map")
 tilesize = 32
 
@@ -24,11 +22,7 @@ function map:load()
     table.insert(self.tiles, {})
 
     for x = 0, tilepng:getWidth() - 1 do
-      local r, g, b, a = tilepng:getPixel(x, y)
-      r = r*255.0
-      g = g*255.0
-      b = b*255.0
-      a = a*255.0
+      local r, g, b, a = cindy.rgba2bytes(tilepng:getPixel(x, y))
       if r == 0 and g == 255 and b == 0 then
         table.insert(self.tiles[y + 1], 1)
         world:add({name = "tile", x = x, y = y}, x * tilesize, y * tilesize, tilesize, tilesize)
